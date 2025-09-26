@@ -10,27 +10,30 @@
 #include "imgui_backends/imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 
-
 class List {
 private:
     std::map<int, std::vector<std::string> > list_data_;
     std::string list_name_;
     int list_key_;
     std::vector<std::array<char, 256> > list_values_;
+    std::string list_find_values_;
 
 public:
     List() = default;
 
     template<typename T>
     List(T&& list_data, std::string list_name)
-        : list_data_(std::forward<T>(list_data)), list_name_(std::move(list_name)), list_key_(0)
+        : list_data_(std::forward<T>(list_data)),
+        list_name_(std::move(list_name)),
+        list_key_(0), list_find_values_("NULL")
     {
         if (!list_data_.empty())
             list_values_ = std::vector<std::array<char, 256> >(list_data_.begin()->second.size());
     }
 
     List(const std::string& list_name, int key, const std::string& raw_data)
-        : list_name_(list_name), list_key_(0)
+        : list_name_(list_name),
+        list_key_(0), list_find_values_("NULL")
     {
         std::vector<std::string> tokens;
         std::string token;
@@ -123,16 +126,7 @@ public:
         ImGui::NextColumn();
         if (ImGui::Button("find"))
         {
-            auto find_str = list_find(list_key_);
-            if (find_str != nullptr)
-            {
-                std::string temp_str = {};
-                for (auto& str: *find_str)
-                {
-                    temp_str += " " + str;
-                }
-                ImGui::Text("searching result: %d%s", list_key_, temp_str.c_str());
-            }
+            list_find_values_ = list_find(list_key_);
         }
         ImGui::NextColumn();
         if (ImGui::Button("remove"))
@@ -140,18 +134,9 @@ public:
             list_remove(list_key_);
         }
         ImGui::Columns(1); // 恢复单列
+        ImGui::Text("Searching result: %s", list_find_values_.c_str());
         ImGui::End();
     }
-
-    // std::vector<std::string> list_rawdata_train(std::vector<std::array<char, 256> >& input_vec_)
-    // {
-    //     std::vector<std::string> res{};
-    //     for (const auto& i : input_vec_)
-    //     {
-    //         res.emplace_back(i.data());
-    //     }
-    //     return res;
-    // }
 
     void list_change(const std::vector<std::array<char, 256> >& raw_string, int key) noexcept
     {
@@ -168,13 +153,18 @@ public:
             list_data_.erase(key);
     }
 
-    const std::vector<std::string>* list_find(int key) const noexcept
+    const std::string list_find(int key) const noexcept
     {
         if (list_data_.contains(key))
         {
-            return &list_data_.at(key);
+            std::string temp = {};
+            for (const auto& i: list_data_.at(key))
+            {
+                temp += i + ";";
+            }
+            return temp;
         }
-        return nullptr;
+        return "NULL";
     }
 
     const std::string list_get_name() const noexcept
@@ -283,13 +273,13 @@ int main()
         {
             l.list_show();
         }
-        ImGui::SetNextItemWidth(200.0f);
-        ImGui::InputTextWithHint("input a list name", "please name a list", name, IM_ARRAYSIZE(name));
+        ImGui::SetNextItemWidth(150.0f);
+        ImGui::InputTextWithHint("Input a list name", "please name a list", name, IM_ARRAYSIZE(name));
         ImGui::SameLine();
         ImGui::SetNextItemWidth(100.0f);
-        ImGui::InputInt("intput a key", &raw_key);
+        ImGui::InputInt("Intput a key", &raw_key);
         ImGui::SetNextItemWidth(400.0f);
-        ImGui::InputTextWithHint("input your data", "please input data, seperate each elements by using ;", raw_data,
+        ImGui::InputTextWithHint("Input your data", "please input data, seperate each elements by using ;", raw_data,
                                  IM_ARRAYSIZE(raw_data));
         if (ImGui::Button("create") && name[0] != '\0')
         {
