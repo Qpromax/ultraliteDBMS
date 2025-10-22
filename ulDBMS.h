@@ -7,10 +7,11 @@
 #include <vector>
 #include <variant>
 #include <unordered_map>
+#include <cstdint>
 
 namespace ulDBMS {
     // 支持的数据类型
-    using Integer = int64_t;
+    using Integer = std::int64_t;
     using Real = double;
     using Text = std::string;
     using Bool = bool;
