@@ -1,0 +1,7 @@
+[requires]
+glfw/3.4
+imgui/1.92.4-docking
+
+[generators]
+CMakeDeps
+CMakeToolchain

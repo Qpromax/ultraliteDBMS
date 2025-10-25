@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 4.0)
 project(ultraLiteDatabase)
 
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 
-find_package(imgui CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG CONFIG REQUIRED)
+find_package(glfw3 CONFIG CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 
 add_executable(ultraLiteDatabase main.cpp
