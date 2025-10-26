@@ -1,5 +1,7 @@
 ## Configuration
 ~~~bash
+conan profile detect
+
 conan install . --output-folder=conan_build --build=missing
 
 cmake -S . -B build \
